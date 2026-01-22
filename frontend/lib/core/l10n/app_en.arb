@@ -1,0 +1,21 @@
+{
+  "appTitle": "SAY CHAT",
+  "login": "Login",
+  "register": "Register",
+  "email": "Email",
+  "password": "Password",
+  "newPassword": "New password",
+  "cfPassword": "Confirm password",
+  "send": "Send",
+  "changeLanguage": "Change language",
+  "welcome": "Welcome to SAY CHAT",
+  "loading": "Loading ...",
+  "forget": "Forget Password ?",
+  "home": "Home",
+  "setting": "Settings",
+  "logout": "Logout",
+  "darkMode": "Dark mode",
+  "signInWithGoogle": "Continue with Google",
+  "userName": "User name",
+  "otp": "OTP"
+}

@@ -1,0 +1,23 @@
+{
+  "appTitle": "SAY CHAT",
+  "login": "Đăng nhập",
+  "register" : "Đăng ký",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "newPassword": "Mật khẩu mới",
+  "cfPassword": "Xác nhận mật khẩu",
+  "send": "Gửi",
+  "changeLanguage": "Đổi ngôn ngữ",
+  "welcome": "Chào mừng đến với SAY CHAT",
+  "loading": "Đang tải ...",
+  "forget": "Quên mật khẩu ?",
+  "home": "Trang chủ",
+  "setting": "Cài đặt",
+  "logout": "Đăng xuất",
+  "darkMode": "Chế độ tối",
+  "signInWithGoogle": "Tiếp tục với Google",
+  "userName": "Tên người dùng",
+  "otp": "Mã xác thực"
+
+  
+}

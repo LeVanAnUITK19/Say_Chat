@@ -1,0 +1,31 @@
+name: say_chat
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.3
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  provider: ^6.1.2
+  dio: ^5.4.0
+  shared_preferences: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+  assets:
+    - assets/icons/google2.png
+    - assets/icons/
