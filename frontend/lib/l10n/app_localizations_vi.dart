@@ -64,4 +64,55 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get otp => 'Mã xác thực';
+
+  @override
+  String get search => 'Tìm kiếm';
+
+  @override
+  String get listFriends => 'Danh sách bạn bè';
+
+  @override
+  String get online => 'Hoạt động';
+
+  @override
+  String get offline => 'Không hoạt động';
+
+  @override
+  String get noResult => 'Không tìm thấy kết quả';
+
+  @override
+  String get searchResult => 'Kết quả tìm kiếm';
+
+  @override
+  String get friend => 'Bạn bè';
+
+  @override
+  String get makeFriend => 'Kết bạn';
+
+  @override
+  String get sentFriendRequest => 'Đã gửi lời mời';
+
+  @override
+  String get noFriend => 'Không có bạn bè';
+
+  @override
+  String get features => 'Tính năng';
+
+  @override
+  String get profile => 'Hồ sơ';
+
+  @override
+  String get createGroup => 'Tạo nhóm';
+
+  @override
+  String get inPerson => 'Thông tin cá nhân';
+
+  @override
+  String get all => 'Tất cả';
+
+  @override
+  String get group => 'Nhóm';
+
+  @override
+  String get unRead => 'Chưa đọc';
 }

@@ -211,6 +211,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OTP'**
   String get otp;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @listFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend list'**
+  String get listFriends;
+
+  /// No description provided for @online.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get online;
+
+  /// No description provided for @offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offline;
+
+  /// No description provided for @noResult.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResult;
+
+  /// No description provided for @searchResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Search results'**
+  String get searchResult;
+
+  /// No description provided for @friend.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend'**
+  String get friend;
+
+  /// No description provided for @makeFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Make friend'**
+  String get makeFriend;
+
+  /// No description provided for @sentFriendRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent friend request'**
+  String get sentFriendRequest;
+
+  /// No description provided for @noFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'No friends'**
+  String get noFriend;
+
+  /// No description provided for @features.
+  ///
+  /// In en, this message translates to:
+  /// **'Features'**
+  String get features;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @createGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Create group'**
+  String get createGroup;
+
+  /// No description provided for @inPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal information'**
+  String get inPerson;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @group.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get group;
+
+  /// No description provided for @unRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get unRead;
 }
 
 class _AppLocalizationsDelegate

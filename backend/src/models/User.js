@@ -31,8 +31,22 @@ const userSchema = new mongoose.Schema({
     },
     avatarId: {
         type: String, // id ảnh trên cloudinary để xóa ảnh
-    } ,
-    
+    },
+    qrCode: {
+        type: String, // link CDN để hiển thị
+        unique: true,
+        sparse: true
+    },
+    status: {
+        type: String,
+        enum: ['online', 'offline', 'banned'],
+        default: 'offline'
+    },
+    lastActive: {
+        type: Date,
+        default: Date.now
+    }
+
 
 },
     { timestamps: true });

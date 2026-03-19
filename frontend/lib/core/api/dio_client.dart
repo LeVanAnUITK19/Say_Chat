@@ -1,6 +1,10 @@
 // lib/core/api/dio_client.dart
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+
 
 class DioClient {
   static final DioClient _instance = DioClient._internal();
@@ -16,8 +20,8 @@ class DioClient {
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       sendTimeout: const Duration(seconds: 10),
+      // KHÔNG set default Content-Type ở đây để cho phép override
       headers: {
-        'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
       // Quan trọng cho production
@@ -31,8 +35,8 @@ class DioClient {
       _dio.interceptors.add(LogInterceptor(
         requestBody: true,
         responseBody: true,
-        requestHeader: false,
-        responseHeader: false,
+        requestHeader: true,
+        responseHeader: true,
         error: true,
       ));
     }
@@ -42,6 +46,21 @@ class DioClient {
     
     // Add auth interceptor
     _dio.interceptors.add(AuthInterceptor());
+    
+    // Add cookie manager chỉ trên mobile (KHÔNG dùng trên web)
+    if (!kIsWeb) {
+      try {
+        final cookieJar = CookieJar();
+        _dio.interceptors.add(CookieManager(cookieJar));
+        if (kDebugMode) {
+          print('✅ CookieManager initialized for mobile');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('❌ Error initializing CookieManager: $e');
+        }
+      }
+    }
   }
 
   // Environment-based URL configuration
@@ -52,9 +71,9 @@ class DioClient {
         print('🌐 Running on Web - Using: http://localhost:5001');
         return 'http://localhost:5001'; // Web development
       } else {
-        print('📱 Running on Mobile - Using: http://10.0.2.2:5001');
+        print('📱 Running on Mobile - Using: http://10.0.2.2:5001 || 192.168.15.31' );
         // Mobile development
-        return 'http://10.0.2.2:5001'; // Android emulator
+        return 'http://192.168.15.31:5001'; // Android emulator
       }
     } else {
       // Production - server URL
@@ -125,15 +144,23 @@ class ErrorInterceptor extends Interceptor {
 class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    // Set default Content-Type nếu chưa có (trừ FormData)
+    if (options.data is! FormData && !options.headers.containsKey('Content-Type')) {
+      options.headers['Content-Type'] = 'application/json';
+    }
+    
     // Add token nếu có (từ SharedPreferences hoặc secure storage)
     try {
       final token = await _getStoredToken();
+      if (kDebugMode) {
+        print('🔑 Token for ${options.path}: ${token != null ? "Found" : "Not found"}');
+      }
       if (token != null && token.isNotEmpty) {
         options.headers['Authorization'] = 'Bearer $token';
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error getting token: $e');
+        print('❌ Error getting token: $e');
       }
     }
     
@@ -144,16 +171,30 @@ class AuthInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     // Handle token expired
     if (err.response?.statusCode == 401) {
+      if (kDebugMode) {
+        print('⚠️ 401 Unauthorized - Token expired or invalid');
+      }
       await _handleTokenExpired();
     }
     handler.next(err);
   }
 
   Future<String?> _getStoredToken() async {
-    // Implement token retrieval logic
-    // Có thể dùng SharedPreferences hoặc FlutterSecureStorage
-    return null; // Placeholder
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
+    if (kDebugMode && token != null) {
+      print('📦 Retrieved token: ${token.substring(0, 20)}...');
+    }
+    return token;
+  } catch (e) {
+    if (kDebugMode) {
+      print('❌ Error getting token: $e');
+    }
+    return null;
   }
+}
+
 
   Future<void> _handleTokenExpired() async {
     // Clear token và redirect về login

@@ -1,4 +1,6 @@
-# Dependencies
+# ============================================================
+# NODE / BACKEND
+# ============================================================
 node_modules/
 **/node_modules/
 
@@ -10,13 +12,8 @@ node_modules/
 .env.production.local
 !.env.example
 
-# Build outputs
-dist/
-build/
-**/build/
-
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -25,123 +22,93 @@ pnpm-debug.log*
 lerna-debug.log*
 
 # Runtime data
-pids
+pids/
 *.pid
 *.seed
 *.pid.lock
 
-# Coverage directory used by tools like istanbul
+# Coverage
 coverage/
 *.lcov
+.nyc_output/
 
-# nyc test coverage
-.nyc_output
-
-# Dependency directories
-jspm_packages/
-
-# Optional npm cache directory
+# Cache / build tools
 .npm
-
-# Optional eslint cache
 .eslintcache
-
-# Microbundle cache
 .rpt2_cache/
 .rts2_cache_cjs/
 .rts2_cache_es/
 .rts2_cache_umd/
-
-# Optional REPL history
 .node_repl_history
-
-# Output of 'npm pack'
 *.tgz
-
-# Yarn Integrity file
 .yarn-integrity
-
-# parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
+jspm_packages/
 
-# Next.js build output
-.next
+# Build outputs (JS frameworks)
+dist/
+.next/
+.nuxt/
+.out/
+.storybook-out/
 
-# Nuxt.js build / generate output
-.nuxt
-dist
-
-# Gatsby files
-.cache/
-public
-
-# Storybook build outputs
-.out
-.storybook-out
-
-# Temporary folders
+# Temp
 tmp/
 temp/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea/
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Uploaded user files (runtime data, not source)
+backend/uploads/*
+!backend/uploads/.gitkeep
 
-# OS generated files
-Thumbs.db
-ehthumbs.db
-Desktop.ini
+# ============================================================
+# FLUTTER / DART (FRONTEND)
+# ============================================================
 
-# Flutter/Dart specific
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.packages
-.pub-cache/
-.pub/
-/build/
+# Dart tool & pub cache
+**/.dart_tool/
+**/.pub-cache/
+**/.pub/
+**/.packages
 
-# Web related
+# Flutter generated / build
+**/build/
+**/*.g.dart
 lib/generated_plugin_registrant.dart
 
-# Symbolication related
-app.*.symbols
+# Flutter plugin files (auto-generated)
+.flutter-plugins
+.flutter-plugins-dependencies
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
 
-# Obfuscation related
+# Flutter metadata
+.metadata
+**/.metadata
+
+# Symbolication / obfuscation
+app.*.symbols
 app.*.map.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Android build artifacts
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/android/.gradle/
+**/android/captures/
+**/android/local.properties
+**/android/GeneratedPluginRegistrant.java
+**/android/.cxx/
+**/android/key.properties
+**/*.keystore
+**/*.jks
 
-# iOS related
-**/ios/**/*.mode1v3
-**/ios/**/*.mode2v3
-**/ios/**/*.moved-aside
-**/ios/**/*.pbxuser
-**/ios/**/*.perspectivev3
-**/ios/**/*sync/
-**/ios/**/.sconsign.dblite
-**/ios/**/.tags*
-**/ios/**/.vagrant/
+# iOS build artifacts
 **/ios/**/DerivedData/
-**/ios/**/Icon?
 **/ios/**/Pods/
 **/ios/**/.symlinks/
-**/ios/**/profile
-**/ios/**/xcuserdata
-**/ios/.generated/
+**/ios/**/xcuserdata/
+**/ios/**/.generated/
 **/ios/Flutter/App.framework
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Flutter.podspec
@@ -153,22 +120,74 @@ app.*.map.json
 **/ios/Flutter/flutter_export_environment.sh
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/Icon?
+**/ios/**/profile
+**/ios/**/dgph
 
 # macOS
 **/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/**/Flutter/ephemeral/
+**/macos/**/Pods/
+**/macos/**/xcuserdata/
+**/macos/**/dgph
 
 # Windows
 **/windows/flutter/generated_plugin_registrant.cc
 **/windows/flutter/generated_plugin_registrant.h
+**/windows/flutter/ephemeral/
+**/windows/x64/
+**/windows/x86/
+**/*.suo
+**/*.user
+**/*.userosscache
+**/*.sln.docstates
 
 # Linux
 **/linux/flutter/generated_plugin_registrant.cc
 **/linux/flutter/generated_plugin_registrant.h
+**/linux/flutter/ephemeral/
 
-# Coverage
-coverage/
+# ============================================================
+# EDITOR & IDE
+# ============================================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+**/.idea/
+*.iml
+*.ipr
+*.iws
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Exceptions to above rules.
+# ============================================================
+# OS GENERATED
+# ============================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V8
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ============================================================
+# EXCEPTIONS
+# ============================================================
 !**/ios/**/default.mode1v3
 !**/ios/**/default.mode2v3
 !**/ios/**/default.pbxuser

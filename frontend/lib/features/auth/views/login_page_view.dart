@@ -18,7 +18,7 @@ class LoginPageView extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return ChangeNotifierProvider<LoginViewModel>(
-      create: (_) => LoginViewModel(),
+      create: (context) => LoginViewModel(context),
       child: Scaffold(
         body: SafeArea(
           child: Center(
@@ -96,7 +96,7 @@ class LoginPageView extends StatelessWidget {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      const SizedBox(height: 40),
+                                      const SizedBox(height: 30),
 
                                       const Icon(
                                         Icons.message,
@@ -141,7 +141,7 @@ class LoginPageView extends StatelessWidget {
                                         controller: vm.passwordController,
                                       ),
 
-                                      const SizedBox(height: 10),
+                                      const SizedBox(height: 5),
 
                                       Row(
                                         children: [

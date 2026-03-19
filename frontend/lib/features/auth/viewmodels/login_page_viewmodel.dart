@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../data/repositories/auth_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../../../core/providers/auth_provider.dart';
 
 class LoginViewModel extends ChangeNotifier {
+  final BuildContext context;
   final AuthRepository _authRepository = AuthRepository();
   
   final emailController = TextEditingController();
@@ -14,6 +17,8 @@ class LoginViewModel extends ChangeNotifier {
 
   bool isLoading = false;
   String? errorMessage;
+
+  LoginViewModel(this.context);
 
   Future<void> login() async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
@@ -39,6 +44,11 @@ class LoginViewModel extends ChangeNotifier {
       
       print(' Login success, token saved');
       
+      // Bắt đầu heartbeat service
+      if (context.mounted) {
+        Provider.of<AuthProvider>(context, listen: false).onLogin();
+      }
+      
       // Set state để navigate đến home
       if( response.accessToken.isNotEmpty )
         goToHome = true;
@@ -55,14 +65,27 @@ class LoginViewModel extends ChangeNotifier {
 
   Future<void> signInWithGoogle() async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
 
-    // fake logic
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final response = await _authRepository.googleSignIn();
 
-    isLoading = false;
-    notifyListeners();
-  } 
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('access_token', response.accessToken);
+
+      if (context.mounted) {
+        Provider.of<AuthProvider>(context, listen: false).onLogin();
+      }
+
+      if (response.accessToken.isNotEmpty) goToHome = true;
+    } catch (e) {
+      errorMessage = 'Đăng nhập Google thất bại';
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
   
   void onRegisterTap() {
     goToRegister = true;

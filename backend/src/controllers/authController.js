@@ -5,8 +5,11 @@ import crypto from 'crypto';
 import Session from '../models/Session.js';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import { OAuth2Client } from 'google-auth-library';
 
 dotenv.config();
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_WEB_CLIENT_ID);
 
 const ACCESS_TOKEN_TTL = '30m';
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000;
@@ -33,19 +36,24 @@ export const signUp = async (req, res) => {
         console.log('🔐 Hashing password...');
         //Mã hóa mật khẩu
         const hashedPassword = await bcrypt.hash(password, 10); //salt = 10
+        //Create QR
 
         console.log('💾 Creating user in database...');
         //Tạo người dùng mới
         const newUser = await User.create({
             username,
             hashedPassword,
-            email
+            email,
         });
+
+        newUser.qrCode = newUser._id.toString(); // Sử dụng _id làm dữ liệu QR code
+        await newUser.save();
 
         console.log('✅ User created successfully:', {
             id: newUser._id,
             username: newUser.username,
-            email: newUser.email
+            email: newUser.email,
+            qrCode: newUser.qrCode
         });
 
         // return
@@ -92,16 +100,19 @@ export const signIn = async (req, res) => {
             expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL) //14 ngày
         });
 
-        //trả refresh token về tỏng cookie
+        // Cập nhật status thành online
+        await User.findByIdAndUpdate(user._id, { status: 'online' });
+
+        //trả refresh token về trong cookie
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: true, // Chỉ gửi cookie qua HTTPS
-            sameSite: 'Strict', // Ngăn chặn CSRF
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
             maxAge: REFRESH_TOKEN_TTL
         });
 
-        //trả access token về cho res
-        return res.status(200).json({ message: `Đăng nhập thành công ${user.username}`, accessToken });
+        //trả access token về cho res (kèm refreshToken cho mobile client)
+        return res.status(200).json({ message: `Đăng nhập thành công ${user.username}`, accessToken, refreshToken });
 
     } catch (error) {
         console.error('Lỗi đăng nhập người dùng:', error);
@@ -111,22 +122,42 @@ export const signIn = async (req, res) => {
 
 export const signOut = async (req, res) => {
     try {
-        //lấy refresh token từ cookie
-        const refreshToken = req.cookies?.refreshToken;
-        if (!refreshToken) {
-            return res.sendStatus(204); // No content
+        console.log('🚪 SignOut request received');
+
+        // Lấy userId từ access token (đã được xác thực bởi protectedRoute)
+        const userId = req.user?._id;
+
+        // Nhận refreshToken từ cookie (web) hoặc body (mobile) — optional
+        const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
+
+        // Xóa session nếu có refreshToken
+        if (refreshToken) {
+            await Session.deleteOne({ refreshToken });
+            console.log('🗑️ Session deleted');
+        } else {
+            // Không có refreshToken → xóa tất cả session của user này
+            if (userId) {
+                await Session.deleteMany({ userId });
+                console.log('🗑️ All sessions for user deleted');
+            }
         }
-        // Xóa session khỏi cơ sở dữ liệu
-        await Session.deleteOne({ refreshToken });
-        // Xóa cookie trên trình duyệt
+
+        // Cập nhật status thành offline
+        if (userId) {
+            await User.findByIdAndUpdate(userId, { status: 'offline' });
+            console.log(`✅ User ${userId} status set to offline`);
+        }
+
+        // Xóa cookie (cho web)
         res.clearCookie('refreshToken', {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict'
         });
-        return res.sendStatus(204); // No content
+
+        return res.sendStatus(204);
     } catch (error) {
-        console.error('Lỗi đăng xuất người dùng:', error);
+        console.error('❌ Lỗi đăng xuất người dùng:', error);
         res.status(500).json({ message: 'Lỗi máy chủ' });
     }
 }
@@ -134,7 +165,7 @@ export const signOut = async (req, res) => {
 export const sendResetPasswordOtp = async (req, res) => {
     try {
         // Tạo transporter để gửi email
-        console.log('📝 SignUp request received:', req.body); 
+        console.log('📝 SignUp request received:', req.body);
         const { email } = req.body;
         if (!email) {
             return res.status(400).json({ message: 'Vui lòng cung cấp email' });
@@ -230,11 +261,11 @@ export const resetPassword = async (req, res) => {
 };
 export const refreshToken = async (req, res) => {
     try {
-       // lấy refresh token từ cookie
+        // lấy refresh token từ cookie
         const refreshToken = req.cookies?.refreshToken;
         if (!refreshToken) {
             return res.status(401).json({ message: 'Không tìm thấy token' });
-        }   
+        }
         //kiểm tra token có hợp lệ không
         const session = await Session.findOne({ refreshToken });
         if (!session || session.expiresAt < Date.now()) {
@@ -246,12 +277,67 @@ export const refreshToken = async (req, res) => {
             process.env.ACCESS_TOKEN_SECRET,
             { expiresIn: ACCESS_TOKEN_TTL }
         );
-        
+
         return res.status(200).json({ accessToken });
     } catch (error) {
         console.error('Lỗi khi gọi refreshtoken:', error);
         res.status(500).json({ message: 'Lỗi máy chủ' });
     }
 };
+
+
 // Logic for user sign-in
+
+export const googleSignIn = async (req, res) => {
+    try {
+        const { idToken } = req.body;
+        if (!idToken) {
+            return res.status(400).json({ message: 'Thiếu idToken' });
+        }
+
+        // Verify idToken với Google
+        const ticket = await googleClient.verifyIdToken({
+            idToken,
+            audience: process.env.GOOGLE_WEB_CLIENT_ID,
+        });
+        const payload = ticket.getPayload();
+        const { email, name, picture } = payload;
+
+        // Tìm hoặc tạo user
+        let user = await User.findOne({ email });
+        if (!user) {
+            user = await User.create({
+                username: name,
+                email,
+                avatarUrl: picture,
+                hashedPassword: crypto.randomBytes(32).toString('hex'), // random, không dùng
+            });
+            user.qrCode = user._id.toString();
+            await user.save();
+        }
+
+        // Tạo tokens như flow thường
+        const accessToken = jwt.sign(
+            { userId: user._id },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: ACCESS_TOKEN_TTL }
+        );
+        const refreshToken = crypto.randomBytes(64).toString('hex');
+        await Session.create({
+            userId: user._id,
+            refreshToken,
+            expiresAt: new Date(Date.now() + REFRESH_TOKEN_TTL),
+        });
+        await User.findByIdAndUpdate(user._id, { status: 'online' });
+
+        return res.status(200).json({
+            message: `Đăng nhập thành công ${user.username}`,
+            accessToken,
+            refreshToken,
+        });
+    } catch (error) {
+        console.error('❌ Lỗi Google Sign-In:', error);
+        return res.status(401).json({ message: 'Google token không hợp lệ' });
+    }
+};
 

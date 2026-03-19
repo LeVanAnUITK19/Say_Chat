@@ -64,4 +64,55 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get otp => 'OTP';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get listFriends => 'Friend list';
+
+  @override
+  String get online => 'Online';
+
+  @override
+  String get offline => 'Offline';
+
+  @override
+  String get noResult => 'No results found';
+
+  @override
+  String get searchResult => 'Search results';
+
+  @override
+  String get friend => 'Friend';
+
+  @override
+  String get makeFriend => 'Make friend';
+
+  @override
+  String get sentFriendRequest => 'Sent friend request';
+
+  @override
+  String get noFriend => 'No friends';
+
+  @override
+  String get features => 'Features';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get createGroup => 'Create group';
+
+  @override
+  String get inPerson => 'Personal information';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get group => 'Group';
+
+  @override
+  String get unRead => 'Unread';
 }

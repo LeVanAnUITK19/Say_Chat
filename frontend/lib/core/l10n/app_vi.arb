@@ -17,7 +17,22 @@
   "darkMode": "Chế độ tối",
   "signInWithGoogle": "Tiếp tục với Google",
   "userName": "Tên người dùng",
-  "otp": "Mã xác thực"
-
-  
+  "otp": "Mã xác thực",
+  "search": "Tìm kiếm",
+  "listFriends" : "Danh sách bạn bè",
+  "online": "Hoạt động",
+  "offline": "Không hoạt động",
+  "noResult": "Không tìm thấy kết quả",
+  "searchResult": "Kết quả tìm kiếm",
+  "friend": "Bạn bè",
+  "makeFriend": "Kết bạn",
+  "sentFriendRequest": "Đã gửi lời mời",
+  "noFriend": "Không có bạn bè",
+  "features": "Tính năng",
+  "profile": "Hồ sơ",
+  "createGroup": "Tạo nhóm",
+  "inPerson": "Thông tin cá nhân",
+  "all": "Tất cả",
+  "group": "Nhóm",
+  "unRead": "Chưa đọc"
 }

@@ -35,7 +35,13 @@ class AuthRepository {
     return await _authApi.resetPassword(request);
   }
   Future<AuthResponse> refreshToken() async {
-    
     return await _authApi.refreshToken();
+  }
+
+  Future<AuthResponse> googleSignIn() async {
+    return await _authApi.googleSignIn();
+  }
+  Future<AuthResponse> getCurrentUser() async {
+    return await _authApi.getCurrentUser();
   }
 }

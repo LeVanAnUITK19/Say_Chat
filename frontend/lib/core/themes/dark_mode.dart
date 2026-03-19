@@ -17,8 +17,10 @@ ThemeData darkMode = ThemeData(
     onPrimaryContainer: Color(0xFF354E16),
     onSurface: Color(0xFFE2E3D8),
 
-   
     tertiary: Colors.grey.shade800,
     inversePrimary: Colors.grey.shade300,
+    onSurfaceVariant: Color(0xFFC5C8BA),
+    surfaceBright: Color(0xFF383A32),
+    tertiaryContainer: Color(0xFFA0D0CB),
   ),
 );

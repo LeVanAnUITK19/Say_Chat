@@ -17,5 +17,22 @@
   "darkMode": "Dark mode",
   "signInWithGoogle": "Continue with Google",
   "userName": "User name",
-  "otp": "OTP"
+  "otp": "OTP",
+  "search": "Search",
+  "listFriends": "Friend list",
+  "online": "Online",
+  "offline": "Offline",
+  "noResult": "No results found",
+  "searchResult": "Search results",
+  "friend": "Friend",
+  "makeFriend": "Make friend",
+  "sentFriendRequest": "Sent friend request",
+  "noFriend": "No friends",
+  "features": "Features",
+  "profile": "Profile",
+  "createGroup": "Create group",
+  "inPerson": "Personal information",
+  "all": "All",
+  "group": "Group",
+  "unRead": "Unread"
 }
