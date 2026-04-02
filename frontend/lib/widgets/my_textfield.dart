@@ -24,6 +24,7 @@ class MyTextField extends StatelessWidget {
         controller: controller,
         focusNode: focusNode,
         obscureText: obscureText,
+        style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.w800),
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.symmetric(
             vertical: 12,
@@ -39,8 +40,9 @@ class MyTextField extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
           ),
+          
           filled: true,
-          fillColor: Theme.of(context).colorScheme.secondary,
+          fillColor: Theme.of(context).colorScheme.surface,
           hintText: hintText,
           hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
           prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),

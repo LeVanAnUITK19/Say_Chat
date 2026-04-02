@@ -74,13 +74,13 @@ class ButtonConfirm extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDisabled
               ? Colors.grey
-              : const Color(0xFF7CFC00),
+              : Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(8),
           boxShadow: isDisabled
               ? []
               : [
                   BoxShadow(
-                    color: Color.fromARGB(255, 95, 185, 5),
+                    color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
                     spreadRadius: 1,
                     blurRadius: 8,
                     offset: const Offset(0, 4),
@@ -96,9 +96,9 @@ class ButtonConfirm extends StatelessWidget {
             ],
             Text(
               text,
-              style: const TextStyle(
+              style:  TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ],

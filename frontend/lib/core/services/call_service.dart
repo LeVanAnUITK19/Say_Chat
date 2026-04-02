@@ -21,6 +21,7 @@ class CallService {
   void Function(MediaStream stream)? onLocalStream;
   void Function(MediaStream stream)? onRemoteStream;
   void Function()? onCallEnded;
+  void Function()? onConnected;
 
   static const Map<String, dynamic> _iceServers = {
     'iceServers': [
@@ -34,8 +35,19 @@ class CallService {
 
     // Khi có ICE candidate → gửi cho peer
     _peerConnection!.onIceCandidate = (candidate) {
-      if (_remoteUserId != null) {
+      if (candidate.candidate != null && candidate.candidate!.isNotEmpty && _remoteUserId != null) {
         _socketService.sendIceCandidate(_remoteUserId!, candidate.toMap());
+      }
+    };
+
+    // Track trạng thái kết nối thật sự
+    _peerConnection!.onConnectionState = (state) {
+      debugPrint('📞 PeerConnection state: $state');
+      if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+        onConnected?.call();
+      } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
+          state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
+        _handleRemoteEnd();
       }
     };
 
@@ -63,6 +75,22 @@ class CallService {
     _remoteUserId = remoteUserId;
     await _initPeerConnection();
 
+    // Đăng ký listeners TRƯỚC để không miss events
+    _socketService.onCallAnswer((data) async {
+      final answer = RTCSessionDescription(data['answer']['sdp'], data['answer']['type']);
+      await _peerConnection!.setRemoteDescription(answer);
+    });
+
+    _socketService.onIceCandidate((data) async {
+      final c = data['candidate'];
+      if (c == null) return;
+      final candidate = RTCIceCandidate(c['candidate'], c['sdpMid'], c['sdpMLineIndex']);
+      await _peerConnection!.addCandidate(candidate);
+    });
+
+    _socketService.onCallEnd(() => _handleRemoteEnd());
+    _socketService.onCallRejected(() => _handleRemoteEnd());
+
     final stream = await _getLocalStream(isVideo);
     stream.getTracks().forEach((track) {
       _peerConnection!.addTrack(track, stream);
@@ -72,31 +100,23 @@ class CallService {
     await _peerConnection!.setLocalDescription(offer);
 
     _socketService.sendCallOffer(remoteUserId, offer.toMap(), isVideo ? 'video' : 'audio');
-
-    // Lắng nghe answer từ callee
-    _socketService.onCallAnswer((data) async {
-      final answer = RTCSessionDescription(data['answer']['sdp'], data['answer']['type']);
-      await _peerConnection!.setRemoteDescription(answer);
-    });
-
-    // Lắng nghe ICE candidates từ callee
-    _socketService.onIceCandidate((data) async {
-      final candidate = RTCIceCandidate(
-        data['candidate']['candidate'],
-        data['candidate']['sdpMid'],
-        data['candidate']['sdpMLineIndex'],
-      );
-      await _peerConnection!.addCandidate(candidate);
-    });
-
-    _socketService.onCallEnd(() => _handleRemoteEnd());
-    _socketService.onCallRejected(() => _handleRemoteEnd());
   }
 
   /// Callee: nhận offer và gửi answer
   Future<void> acceptCall(String callerId, Map<String, dynamic> offer, bool isVideo) async {
     _remoteUserId = callerId;
     await _initPeerConnection();
+
+    // Đăng ký listeners TRƯỚC
+    _socketService.onIceCandidate((data) async {
+      final c = data['candidate'];
+      if (c == null) return;
+      final candidate = RTCIceCandidate(c['candidate'], c['sdpMid'], c['sdpMLineIndex']);
+      await _peerConnection!.addCandidate(candidate);
+    });
+
+    _socketService.onCallEnd(() => _handleRemoteEnd());
+    _socketService.onCallRejected(() => _handleRemoteEnd());
 
     final stream = await _getLocalStream(isVideo);
     stream.getTracks().forEach((track) {
@@ -110,18 +130,6 @@ class CallService {
     await _peerConnection!.setLocalDescription(answer);
 
     _socketService.sendCallAnswer(callerId, answer.toMap());
-
-    // Lắng nghe ICE candidates từ caller
-    _socketService.onIceCandidate((data) async {
-      final candidate = RTCIceCandidate(
-        data['candidate']['candidate'],
-        data['candidate']['sdpMid'],
-        data['candidate']['sdpMLineIndex'],
-      );
-      await _peerConnection!.addCandidate(candidate);
-    });
-
-    _socketService.onCallEnd(() => _handleRemoteEnd());
   }
 
   /// Từ chối call

@@ -46,12 +46,11 @@ class _CallPageState extends State<CallPage> {
     };
 
     _callService.onRemoteStream = (stream) {
-      if (mounted) {
-        setState(() {
-          _remoteRenderer.srcObject = stream;
-          _isConnected = true;
-        });
-      }
+      if (mounted) setState(() => _remoteRenderer.srcObject = stream);
+    };
+
+    _callService.onConnected = () {
+      if (mounted) setState(() => _isConnected = true);
     };
 
     _callService.onCallEnded = () {
@@ -129,7 +128,7 @@ class _CallPageState extends State<CallPage> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          _isConnected ? 'Đang kết nối...' : 'Đang gọi...',
+                          _isConnected ? 'Đã kết nối' : 'Đang gọi...',
                           style: const TextStyle(color: Colors.white60),
                         ),
                       ],
@@ -162,7 +161,7 @@ class _CallPageState extends State<CallPage> {
                         shadows: [Shadow(blurRadius: 8, color: Colors.black)]),
                   ),
                   Text(
-                    _isConnected ? 'Đang kết nối...' : 'Đang gọi...',
+                    _isConnected ? 'Đã kết nối' : 'Đang gọi...',
                     style: const TextStyle(color: Colors.white70,
                         shadows: [Shadow(blurRadius: 8, color: Colors.black)]),
                   ),
