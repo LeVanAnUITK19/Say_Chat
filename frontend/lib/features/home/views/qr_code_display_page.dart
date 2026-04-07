@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import '../../../core/utils/url_helper.dart';
 
 class QrCodeDisplayPage extends StatelessWidget {
   final String username;
@@ -34,7 +35,7 @@ class QrCodeDisplayPage extends StatelessWidget {
                 radius: 50,
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 backgroundImage: avatarUrl != null
-                    ? NetworkImage(avatarUrl!)
+                    ? NetworkImage(resolveMediaUrl(avatarUrl))
                     : null,
                 child: avatarUrl == null
                     ? Text(

@@ -9,7 +9,7 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
-  String get appTitle => 'SAY CHAT';
+  String get appTitle => 'SECRET_CHAT';
 
   @override
   String get login => 'Đăng nhập';
@@ -36,7 +36,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get changeLanguage => 'Đổi ngôn ngữ';
 
   @override
-  String get welcome => 'Chào mừng đến với SAY CHAT';
+  String get welcome => 'Chào mừng đến với SECRET_CHAT';
 
   @override
   String get loading => 'Đang tải ...';
@@ -115,4 +115,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get unRead => 'Chưa đọc';
+
+  @override
+  String get confirm => 'Xác nhận';
+
+  @override
+  String get reTurn => 'Quay lại';
+
+  @override
+  String get changePW => 'Thay đổi mật khẩu';
 }

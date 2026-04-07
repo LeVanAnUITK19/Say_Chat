@@ -11,7 +11,8 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../../../core/services/socket_service.dart';
 
 // Conditional import cho audio recorder
-import 'package:flutter_sound/flutter_sound.dart' if (dart.library.html) '../utils/audio_recorder_stub.dart';
+import 'package:flutter_sound/flutter_sound.dart'
+    if (dart.library.html) '../utils/audio_recorder_stub.dart';
 
 class ChatPageViewmodel extends ChangeNotifier {
   final BuildContext context;
@@ -25,7 +26,12 @@ class ChatPageViewmodel extends ChangeNotifier {
   final String type;
   final SocketService _socketService = SocketService();
 
-  ChatPageViewmodel({required this.context, required this.conversationId, required this.recipientId, required this.type}) {
+  ChatPageViewmodel({
+    required this.context,
+    required this.conversationId,
+    required this.recipientId,
+    required this.type,
+  }) {
     if (!kIsWeb) {
       _initRecorder();
     }
@@ -47,7 +53,8 @@ class ChatPageViewmodel extends ChangeNotifier {
   void _initSocket() {
     _socketService.joinConversation(conversationId);
     _socketService.onNewMessageForConversation(conversationId, (data) {
-      if (!_isActive) return; // Page không visible → bỏ qua, sẽ reload khi active lại
+      if (!_isActive)
+        return; // Page không visible → bỏ qua, sẽ reload khi active lại
       final msgJson = data['message'] as Map<String, dynamic>?;
       if (msgJson == null) return;
       final newMsg = Message.fromJson(msgJson);
@@ -98,8 +105,6 @@ class ChatPageViewmodel extends ChangeNotifier {
       debugPrint('Error loading current user: $e');
     }
   }
-  
-  
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -116,6 +121,8 @@ class ChatPageViewmodel extends ChangeNotifier {
   Future<void> loadMessages() async {
     _isLoading = true;
     notifyListeners();
+
+    
 
     try {
       _messages = await _messageRepository.getMessages(conversationId);
@@ -137,7 +144,7 @@ class ChatPageViewmodel extends ChangeNotifier {
 
     // Phải có content hoặc attachments
     if (content.isEmpty && (attachments == null || attachments.isEmpty)) return;
-    
+
     try {
       // Clear input ngay
       messageController.clear();
@@ -230,12 +237,8 @@ class ChatPageViewmodel extends ChangeNotifier {
         );
         debugPrint('Uploaded image: $attachment');
 
-
         // Gửi tin nhắn với ảnh
-        await sendMessage(
-          messageType: 'image',
-          attachments: [attachment],
-        );
+        await sendMessage(messageType: 'image', attachments: [attachment]);
       }
     } catch (e) {
       debugPrint('Error picking/sending image: $e');
@@ -266,10 +269,7 @@ class ChatPageViewmodel extends ChangeNotifier {
 
         // Gửi tin nhắn với nhiều ảnh
         if (attachments.isNotEmpty) {
-          await sendMessage(
-            messageType: 'image',
-            attachments: attachments,
-          );
+          await sendMessage(messageType: 'image', attachments: attachments);
         }
       }
     } catch (e) {
@@ -300,10 +300,7 @@ class ChatPageViewmodel extends ChangeNotifier {
         );
 
         // Gửi tin nhắn
-        await sendMessage(
-          messageType: 'image',
-          attachments: [attachment],
-        );
+        await sendMessage(messageType: 'image', attachments: [attachment]);
       }
     } catch (e) {
       debugPrint('Error taking/sending photo: $e');
@@ -320,7 +317,7 @@ class ChatPageViewmodel extends ChangeNotifier {
       _showError('Ghi âm không hỗ trợ trên web');
       return;
     }
-    
+
     try {
       final status = await Permission.microphone.request();
       if (status != PermissionStatus.granted) {
@@ -329,13 +326,11 @@ class ChatPageViewmodel extends ChangeNotifier {
       }
 
       final directory = await getTemporaryDirectory();
-      final path = '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
-      
-      await _audioRecorder!.startRecorder(
-        toFile: path,
-        codec: Codec.aacADTS,
-      );
-      
+      final path =
+          '${directory.path}/audio_${DateTime.now().millisecondsSinceEpoch}.aac';
+
+      await _audioRecorder!.startRecorder(toFile: path, codec: Codec.aacADTS);
+
       _isRecording = true;
       _recordingPath = path;
       notifyListeners();
@@ -351,7 +346,7 @@ class ChatPageViewmodel extends ChangeNotifier {
       _showError('Ghi âm không hỗ trợ trên web');
       return;
     }
-    
+
     try {
       final path = await _audioRecorder!.stopRecorder();
       _isRecording = false;
@@ -368,10 +363,7 @@ class ChatPageViewmodel extends ChangeNotifier {
         );
 
         // Gửi tin nhắn
-        await sendMessage(
-          messageType: 'audio',
-          attachments: [attachment],
-        );
+        await sendMessage(messageType: 'audio', attachments: [attachment]);
       }
     } catch (e) {
       debugPrint('Error stopping/sending recording: $e');
@@ -385,11 +377,11 @@ class ChatPageViewmodel extends ChangeNotifier {
   // Hủy ghi âm
   Future<void> cancelRecording() async {
     if (kIsWeb || _audioRecorder == null) return;
-    
+
     try {
       await _audioRecorder!.stopRecorder();
       _isRecording = false;
-      
+
       // Xóa file đã ghi
       if (_recordingPath != null) {
         final file = File(_recordingPath!);
@@ -397,7 +389,7 @@ class ChatPageViewmodel extends ChangeNotifier {
           await file.delete();
         }
       }
-      
+
       notifyListeners();
     } catch (e) {
       debugPrint('Error canceling recording: $e');
@@ -443,10 +435,16 @@ class ChatPageViewmodel extends ChangeNotifier {
     );
   }
 
+  void scrollToBottom() {
+    if (!scrollController.hasClients) return;
+
+    scrollController.jumpTo(scrollController.position.maxScrollExtent);
+  }
+
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override

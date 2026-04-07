@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: navigatorKey,
       navigatorObservers: [routeObserver],
-      title: 'SAY CHAT',
+      title: 'SECRET_CHAT',
       supportedLocales: const [Locale('vi'), Locale('en')],
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -56,6 +56,16 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => const HomePageView(),
         '/login': (context) => const LoginPageView(),
+        '/chat': (context) {
+          final args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+          return ChatPageView(
+            conversationId: args['conversationId'] as String,
+            chatTitle: args['username'] as String? ?? '',
+            type: args['type'] as String? ?? 'direct',
+            avatarUrl: args['avatarUrl'] as String?,
+            recipientId: args['recipientId'] as String?,
+          );
+        },
       },
     );
   }

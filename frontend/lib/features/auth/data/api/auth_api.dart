@@ -80,4 +80,10 @@ class AuthApi {
     final response = await _dio.get(ApiEndpoints.authMe);
     return AuthResponse.fromJson(response.data);
   }
+
+  /// Lấy user info dưới dạng Map để lưu vào AuthProvider
+  Future<Map<String, dynamic>> fetchUserInfo() async {
+    final response = await _dio.get(ApiEndpoints.authMe);
+    return Map<String, dynamic>.from(response.data as Map);
+  }
 }

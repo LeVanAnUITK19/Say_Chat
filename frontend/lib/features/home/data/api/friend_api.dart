@@ -25,12 +25,16 @@ class  FriendAPI{
     return response.data as Map<String, dynamic>;
   }
 
-  Future<void> acceptFriendRequest(String requestId) async {
-    await _dio.post('${ApiEndpoints.friends}/requests/$requestId/accept');
+  Future<Map<String, dynamic>> acceptFriendRequest(String requestId) async {
+    final response = await _dio.post('${ApiEndpoints.friends}/requests/$requestId/accept');
+    return response.data as Map<String, dynamic>;
   }
 
   Future<void> declineFriendRequest(String requestId) async {
     await _dio.post('${ApiEndpoints.friends}/requests/$requestId/decline');
+  }
+  Future<void> deleteFriend(String friendId) async {
+    await _dio.delete('${ApiEndpoints.friends}/$friendId');
   }
 
   Future<Map<String, dynamic>> findUserByQrCode(String qrCode) async {

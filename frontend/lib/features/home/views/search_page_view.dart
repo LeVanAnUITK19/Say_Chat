@@ -4,6 +4,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../widgets/my_textfield.dart';
 import '../viewmodels/search_page_viewmodel.dart';
 import 'user_profile_page.dart';
+import '../../../core/utils/url_helper.dart';
 
 class SearchPageView extends StatelessWidget {
   const SearchPageView({super.key});
@@ -18,7 +19,6 @@ class SearchPageView extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.search),
-          backgroundColor: Theme.of(context).colorScheme.primary,
         ),
         body: Consumer<SearchPageViewmodel>(
           builder: (context, vm, _) {
@@ -92,7 +92,7 @@ class SearchPageView extends StatelessWidget {
                                             context,
                                           ).colorScheme.secondary,
                                           backgroundImage: fromAvatar != null
-                                              ? NetworkImage(fromAvatar)
+                                              ? NetworkImage(resolveMediaUrl(fromAvatar))
                                               : null,
                                           child: fromAvatar == null
                                               ? Text(
@@ -221,7 +221,7 @@ class SearchPageView extends StatelessWidget {
                                               context,
                                             ).colorScheme.primary,
                                             backgroundImage: userAvatar != null
-                                                ? NetworkImage(userAvatar)
+                                                ? NetworkImage(resolveMediaUrl(userAvatar))
                                                 : null,
                                             child: userAvatar == null
                                                 ? Text(
@@ -308,9 +308,15 @@ class SearchPageView extends StatelessWidget {
           );
         },
         style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 0,
         ),
-        child: const Text('Kết bạn', style: TextStyle(fontSize: 12)),
+        child: const Text('Kết bạn', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
       );
     }
   }

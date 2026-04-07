@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:say_chat/features/home/data/repositories/Conversation_repository.dart';
 import '../data/repositories/friend_repository.dart';
+import '../../chat/views/chat_page_view.dart';
 
 class SearchPageViewmodel extends ChangeNotifier {
   final BuildContext context;
   final FriendRepository _friendRepository = FriendRepository();
+  final ConversationRepository _conversationRepository =
+      ConversationRepository();
 
   SearchPageViewmodel(this.context) {
     loadFriends();
     loadFriendRequests();
-    
+
     // Lắng nghe thay đổi của searchController
     searchController.addListener(() {
       onSearchChanged(searchController.text);
@@ -70,7 +74,7 @@ class SearchPageViewmodel extends ChangeNotifier {
   }
 
   Future<void> searchUsers() async {
-    if (_keyword.trim().isEmpty) {
+    if (_keyword.trim().isEmpty || !_keyword.contains('@')) {
       _searchResults = [];
       _isSearching = false;
       notifyListeners();
@@ -106,14 +110,68 @@ class SearchPageViewmodel extends ChangeNotifier {
     }
   }
 
+  Future<void> createConversationWithUser(
+    String userId,
+    String username,
+    String? avatarUrl,
+  ) async {
+    try {
+      final conversation = await _conversationRepository.createConversation(
+        type: "direct",
+        memberIds: [userId],
+      );
+
+      final conversationId = conversation['_id']?.toString() ?? '';
+
+      // Lấy thông tin participant từ response (đã được populate)
+      final participants = conversation['participants'] as List<dynamic>? ?? [];
+      final other = participants.firstWhere(
+        (p) {
+          final id = p['_id']?.toString() ?? p['userId']?['_id']?.toString() ?? '';
+          return id == userId;
+        },
+        orElse: () => <String, dynamic>{},
+      );
+
+      // Ưu tiên data từ API response, fallback về data truyền vào
+      final resolvedUsername = (other['username'] as String?)?.isNotEmpty == true
+          ? other['username'] as String
+          : username;
+      final resolvedAvatar = (other['avatarUrl'] as String?) ?? avatarUrl;
+
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => ChatPageView(
+              conversationId: conversationId,
+              chatTitle: resolvedUsername,
+              type: 'direct',
+              avatarUrl: resolvedAvatar,
+              recipientId: userId,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error creating conversation: $e');
+    }
+  }
+
   Future<void> acceptFriendRequest(String requestId) async {
     try {
-      await _friendRepository.acceptFriendRequest(requestId);
+      final result = await _friendRepository.acceptFriendRequest(requestId);
+      // Backend trả về newFriend với đầy đủ thông tin
+      final newFriend = result['newFriend'] as Map<String, dynamic>?;
+      final newFriendId = newFriend?['_id']?.toString();
+      final newFriendUsername = newFriend?['username'] as String? ?? '';
+      final newFriendAvatar = newFriend?['avatarUrl'] as String?;
+
+      if (newFriendId != null) {
+        await createConversationWithUser(newFriendId, newFriendUsername, newFriendAvatar);
+      }
       // Refresh cả friends và requests
-      await Future.wait([
-        loadFriends(),
-        loadFriendRequests(),
-      ]);
+      await Future.wait([loadFriends(), loadFriendRequests()]);
     } catch (e) {
       debugPrint('Error accepting friend request: $e');
     }

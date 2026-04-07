@@ -19,12 +19,15 @@ class FriendRepository {
     return await _friendAPI.getFriendRequests();
   }
 
-  Future<void> acceptFriendRequest(String requestId) async {
+  Future<Map<String, dynamic>> acceptFriendRequest(String requestId) async {
     return await _friendAPI.acceptFriendRequest(requestId);
   }
 
   Future<void> declineFriendRequest(String requestId) async {
     return await _friendAPI.declineFriendRequest(requestId);
+  }
+  Future<void> deleteFriend(String friendId) async {
+    return await _friendAPI.deleteFriend(friendId);
   }
 
   Future<List<dynamic>> getFriendOnlineStatus() async {

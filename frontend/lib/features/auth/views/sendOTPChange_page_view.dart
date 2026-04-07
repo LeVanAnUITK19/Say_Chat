@@ -2,22 +2,23 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../widgets/my_textfield.dart';
 import '../../../widgets/my_button.dart';
-import '../viewmodels/forgetPassword_page_viewmodel.dart';
+import '../viewmodels/sendOTPChange_page_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'resetPassword_page_view.dart';
+import 'changePassword_page_view.dart';
 
-class ForgetPasswordView extends StatelessWidget {
-  const ForgetPasswordView({Key? key}) : super(key: key);
+class SendOTPChangeView extends StatelessWidget {
+  const SendOTPChangeView({Key? key, required this.email}) : super(key: key);
+  final String email;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return ChangeNotifierProvider(
-      create: (_) => ForgetPasswordPageViewModel(),
+      create: (_) => SendOTPChangePageViewModel(email),
       child: Scaffold(
-        appBar: AppBar(title: Text(l10n.login)),
+        appBar: AppBar(title: Text(l10n.reTurn)),
         body: Center(
-          child: Consumer<ForgetPasswordPageViewModel>(
+          child: Consumer<SendOTPChangePageViewModel>(
             builder: (context, vm, _) {
               /// ✅ Lắng nghe điều hướng ĐÚNG CHỖ
               if (vm.goToResetPassword) {
@@ -25,7 +26,7 @@ class ForgetPasswordView extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const ResetpasswordPageView(),
+                      builder: (_) => const ChangePasswordPageView(),
                     ),
                   );
                   vm.onResetPasswordNavigated();
@@ -35,7 +36,7 @@ class ForgetPasswordView extends StatelessWidget {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.lock_reset, size: 60, color: Colors.blue),
+                  const Icon(Icons.email, size: 60, color: Colors.blue),
                   const SizedBox(height: 20),
 
                   Text(
@@ -46,29 +47,20 @@ class ForgetPasswordView extends StatelessWidget {
                   const SizedBox(height: 10),
                   
                   Text(
-                    "Vui lòng nhập email đã sử dụng đăng ký tài khoản",
+                    "Bấm xác nhận để nhận mã OTP qua email đăng ký tài khoản",
                     style: TextStyle(
                       fontSize: 13,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
 
-                  const SizedBox(height: 10),
-
-                  MyTextField(
-                    icon: Icons.email,
-                    hintText: l10n.email,
-                    obscureText: false,
-                    controller: vm.emailController,
-                  ),
-                  
 
                   const SizedBox(height: 20),
 
                   vm.isLoading
                       ? ButtonConfirm(text: l10n.loading, onTap: null)
                       : ButtonConfirm(
-                          text: l10n.send,
+                          text: l10n.confirm,
                           onTap: vm.forgetPassword,
                         ),
 

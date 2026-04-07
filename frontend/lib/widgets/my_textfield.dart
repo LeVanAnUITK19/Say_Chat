@@ -18,34 +18,33 @@ class MyTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: TextField(
         controller: controller,
         focusNode: focusNode,
         obscureText: obscureText,
-        style: TextStyle(color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.w800),
+        style: TextStyle(
+          color: scheme.onSurface,
+          fontWeight: FontWeight.w500,
+          fontSize: 15,
+        ),
         decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 12,
-            horizontal: 12,
-          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.tertiary,
-            ),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: scheme.outline.withOpacity(0.5)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: scheme.primary, width: 2),
           ),
-          
           filled: true,
-          fillColor: Theme.of(context).colorScheme.surface,
+          fillColor: scheme.surfaceBright,
           hintText: hintText,
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-          prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
+          hintStyle: TextStyle(color: scheme.onSurfaceVariant.withOpacity(0.6)),
+          prefixIcon: Icon(icon, color: scheme.primary, size: 20),
         ),
       ),
     );
@@ -70,28 +69,28 @@ class MyTextFields extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: TextField(
         controller: controller,
         focusNode: focusNode,
         obscureText: obscureText,
+        style: TextStyle(color: scheme.onSurface, fontWeight: FontWeight.w500),
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.tertiary,
-            ),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: scheme.outline.withOpacity(0.5)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: scheme.primary, width: 2),
           ),
           filled: true,
-          fillColor: Theme.of(context).colorScheme.secondary,
+          fillColor: scheme.surfaceBright,
           hintText: hintText,
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-          prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
+          hintStyle: TextStyle(color: scheme.onSurfaceVariant.withOpacity(0.6)),
+          prefixIcon: Icon(icon, color: scheme.primary, size: 20),
         ),
       ),
     );
@@ -100,9 +99,9 @@ class MyTextFields extends StatelessWidget {
 
 class MyTextFieldSearch extends StatelessWidget {
   final IconData icon;
-  final IconData? suffixIcon; // 👈 icon bên phải
-  final VoidCallback? onSuffixTap; // 👈 sự kiện bấm suffix
-  final VoidCallback? onPrefixTap; // 👈 sự kiện bấm prefix (icon trái)
+  final IconData? suffixIcon;
+  final VoidCallback? onSuffixTap;
+  final VoidCallback? onPrefixTap;
   final String hintText;
   final bool obscureText;
   final TextEditingController controller;
@@ -126,59 +125,42 @@ class MyTextFieldSearch extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: TextField(
         controller: controller,
         focusNode: focusNode,
-
         obscureText: obscureText,
         onTap: onTap,
         onChanged: onChanged,
         readOnly: onTap != null,
+        style: TextStyle(color: scheme.onSurface, fontSize: 15),
         decoration: InputDecoration(
           isDense: true,
-          contentPadding: const EdgeInsets.symmetric(
-            vertical: 12,
-            horizontal: 0,
-          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.tertiary,
-            ),
+            borderRadius: BorderRadius.circular(24),
+            borderSide: BorderSide(color: scheme.outline.withOpacity(0.3)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            borderRadius: BorderRadius.circular(24),
+            borderSide: BorderSide(color: scheme.primary, width: 1.5),
           ),
           filled: true,
-          fillColor: Theme.of(context).colorScheme.primaryContainer,
-
+          fillColor: scheme.surfaceBright,
           hintText: hintText,
-          hintStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-
-          /// ICON TRÁI
+          hintStyle: TextStyle(color: scheme.onSurfaceVariant.withOpacity(0.6)),
           prefixIcon: onPrefixTap == null
-              ? Icon(icon, color: Theme.of(context).colorScheme.primary)
+              ? Icon(icon, color: scheme.onSurfaceVariant, size: 20)
               : IconButton(
-                  icon: Icon(
-                    icon,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  icon: Icon(icon, color: scheme.onSurfaceVariant, size: 20),
                   onPressed: onPrefixTap,
                 ),
-
-          /// ICON PHẢI 👇
           suffixIcon: suffixIcon == null
               ? null
               : IconButton(
-                  icon: Icon(
-                    suffixIcon,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
+                  icon: Icon(suffixIcon, color: scheme.primary, size: 20),
                   onPressed: onSuffixTap,
                 ),
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../viewmodels/createGroup_page_viewmodel.dart';
+import '../../../core/utils/url_helper.dart';
 
 class CreateGroupPage extends StatelessWidget {
   const CreateGroupPage({super.key});
@@ -104,7 +105,7 @@ class CreateGroupPage extends StatelessWidget {
                                   secondary: CircleAvatar(
                                     backgroundColor: Theme.of(context).colorScheme.primary,
                                     backgroundImage: friend['avatarUrl'] != null
-                                        ? NetworkImage(friend['avatarUrl'])
+                                        ? NetworkImage(resolveMediaUrl(friend['avatarUrl'] as String))
                                         : null,
                                     child: friend['avatarUrl'] == null
                                         ? Text(

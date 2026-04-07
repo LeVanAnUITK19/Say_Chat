@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'SAY CHAT'**
+  /// **'SECRET_CHAT'**
   String get appTitle;
 
   /// No description provided for @login.
@@ -155,7 +155,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcome.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to SAY CHAT'**
+  /// **'Welcome to SECRET_CHAT'**
   String get welcome;
 
   /// No description provided for @loading.
@@ -313,6 +313,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unread'**
   String get unRead;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @reTurn.
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get reTurn;
+
+  /// No description provided for @changePW.
+  ///
+  /// In en, this message translates to:
+  /// **'Change password'**
+  String get changePW;
 }
 
 class _AppLocalizationsDelegate

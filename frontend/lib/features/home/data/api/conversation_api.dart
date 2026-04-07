@@ -31,5 +31,22 @@ class ConversationAPI {
     return response.data['user']['username'] as String;
   }
 
-  
+  Future<Map<String, dynamic>> sendMessage({
+    required String conversationId,
+    required String recipientId,
+    required String content,
+    required String username,
+    String? type,
+    List<Map<String, dynamic>>? attachments,
+  }) async {
+    final response = await _dio.post('/api/messages/direct', data: {
+      'conversationId': conversationId,
+      'recipientId': recipientId,
+      'content': content,
+      'username': username,
+      if (type != null) 'type': type,
+      if (attachments != null) 'attachments': attachments,
+    });
+    return response.data['message'] as Map<String, dynamic>;
+  }
 }

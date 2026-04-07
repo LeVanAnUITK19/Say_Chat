@@ -2,36 +2,25 @@ import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../widgets/my_textfield.dart';
 import '../../../widgets/my_button.dart';
-import '../viewmodels/forgetPassword_page_viewmodel.dart';
+import '../viewmodels/changePassword_page_viewmodel.dart';
 import 'package:provider/provider.dart';
-import 'resetPassword_page_view.dart';
 
-class ForgetPasswordView extends StatelessWidget {
-  const ForgetPasswordView({Key? key}) : super(key: key);
+class ChangePasswordPageView extends StatelessWidget {
+  const ChangePasswordPageView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return ChangeNotifierProvider(
-      create: (_) => ForgetPasswordPageViewModel(),
-      child: Scaffold(
-        appBar: AppBar(title: Text(l10n.login)),
-        body: Center(
-          child: Consumer<ForgetPasswordPageViewModel>(
-            builder: (context, vm, _) {
-              /// ✅ Lắng nghe điều hướng ĐÚNG CHỖ
-              if (vm.goToResetPassword) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const ResetpasswordPageView(),
-                    ),
-                  );
-                  vm.onResetPasswordNavigated();
-                });
-              }
 
+    return ChangeNotifierProvider(
+      create: (_) => ChangePasswordPageViewModel(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(l10n.reTurn),
+        ),
+        body: Center(
+          child: Consumer<ChangePasswordPageViewModel>(
+            builder: (context, vm, _) {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -39,37 +28,55 @@ class ForgetPasswordView extends StatelessWidget {
                   const SizedBox(height: 20),
 
                   Text(
-                    l10n.forget,
+                    l10n.changePW,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
 
-                  const SizedBox(height: 10),
-                  
-                  Text(
-                    "Vui lòng nhập email đã sử dụng đăng ký tài khoản",
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
+                  const SizedBox(height: 30),
 
-                  const SizedBox(height: 10),
-
+                  /// EMAIL
                   MyTextField(
                     icon: Icons.email,
                     hintText: l10n.email,
                     obscureText: false,
                     controller: vm.emailController,
                   ),
-                  
+                  const SizedBox(height: 20),
+                  //OTP
+                  MyTextField(
+                    icon: Icons.vpn_key,
+                    hintText: l10n.otp,
+                    obscureText: false,
+                    controller: vm.otpController,
+                  ),
+
+
+                  const SizedBox(height: 20),
+                   /// PASSWORD
+                  MyTextField(
+                    icon: Icons.lock,
+                    hintText: l10n.newPassword,
+                    obscureText: true,
+                    controller: vm.newPasswordController,
+                  ),
 
                   const SizedBox(height: 20),
 
+                  /// CONFIRM PASSWORD
+                  MyTextField(
+                    icon: Icons.lock,
+                    hintText: l10n.cfPassword,
+                    obscureText: true,
+                    controller: vm.confirmNewPasswordController,
+                  ),
+                  const SizedBox(height: 30),
+
+                  /// BUTTON
                   vm.isLoading
                       ? ButtonConfirm(text: l10n.loading, onTap: null)
                       : ButtonConfirm(
                           text: l10n.send,
-                          onTap: vm.forgetPassword,
+                          onTap: vm.resetPassword,
                         ),
 
                   if (vm.errorMessage != null)

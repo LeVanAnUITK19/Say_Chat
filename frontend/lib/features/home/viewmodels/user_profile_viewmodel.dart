@@ -18,6 +18,9 @@ class UserProfileViewmodel extends ChangeNotifier {
   bool _isSending = false;
   bool get isSending => _isSending;
 
+  bool _isDeleting = false;
+  bool get isDeleting => _isDeleting;
+
   Map<String, dynamic>? _profile;
   Map<String, dynamic>? get profile => _profile;
 
@@ -26,6 +29,7 @@ class UserProfileViewmodel extends ChangeNotifier {
   String get status => _profile?['status'] ?? 'offline';
   String get email => _profile?['email'] ?? '';
   String get friendshipStatus => _profile?['friendshipStatus'] ?? 'none';
+  String? get conversationId => _profile?['conversationId']?.toString();
 
   Future<void> loadProfile() async {
     _isLoading = true;
@@ -54,6 +58,23 @@ class UserProfileViewmodel extends ChangeNotifier {
       return false;
     } finally {
       _isSending = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> deleteFriend() async {
+    _isDeleting = true;
+    notifyListeners();
+    try {
+      await _friendRepo.deleteFriend(userId);
+      _profile?['friendshipStatus'] = 'none';
+      notifyListeners();
+      return true;
+    } catch (e) {
+      debugPrint('Error deleting friend: $e');
+      return false;
+    } finally {
+      _isDeleting = false;
       notifyListeners();
     }
   }

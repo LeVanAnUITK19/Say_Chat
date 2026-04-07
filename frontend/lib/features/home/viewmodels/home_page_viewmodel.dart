@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/repositories/Conversation_repository.dart';
 import '../data/repositories/friend_repository.dart';
-import 'package:dio/dio.dart';
 import '../../../../core/api/dio_client.dart';
 import '../../../../core/services/socket_service.dart';
 
@@ -26,8 +25,8 @@ class HomePageViewmodel extends ChangeNotifier {
       if (convo == null) return;
       final exists = _conversations.any((c) => c['_id'] == convo['_id']);
       if (!exists) {
-        _conversations = [convo, ..._conversations];
-        notifyListeners();
+        // Reload toàn bộ để đảm bảo participants được populate đầy đủ
+        loadConversations();
       }
     });
 
@@ -106,6 +105,11 @@ class HomePageViewmodel extends ChangeNotifier {
       print('🔍 Loading conversations...');
       _conversations = await _conversationRepository.getConversations();
       print('✅ Loaded ${_conversations.length} conversations');
+      // Join tất cả conversation rooms để nhận new_message và conversation_updated
+      for (final c in _conversations) {
+        final id = c['_id']?.toString();
+        if (id != null) _socketService.joinConversation(id);
+      }
     } catch (e) {
       print('❌ Error loading conversations: $e');
       _conversations = [];

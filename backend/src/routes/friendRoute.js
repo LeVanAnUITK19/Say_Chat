@@ -7,7 +7,8 @@ import{
     getAllFriends,
     getFriendRequest,
     searchUsers,
-    getFriendOnlineStatus
+    getFriendOnlineStatus,
+    deleteFriend
 
 }from '../controllers/friendController.js';
 
@@ -17,6 +18,7 @@ const router = express.Router();
 router.post('/requests', sendFriendRequest);
 router.post('/requests/:requestId/accept', acceptFriendRequest);
 router.post('/requests/:requestId/decline', declineFriendRequest);
+router.delete('/:friendId', deleteFriend);
 
 router.get('/search', searchUsers);
 router.get('/', getAllFriends);

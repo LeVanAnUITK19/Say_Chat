@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import '../data/model/message.dart';
+import '../../home/views/user_profile_page.dart';
+import '../../../core/utils/url_helper.dart';
+import 'package:provider/provider.dart';
+import '../viewmodels/chat_page_viewmodel.dart';
 
 class MessageBubble extends StatefulWidget {
   final Message message;
@@ -44,7 +47,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 radius: 16,
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 backgroundImage: widget.avatarUrl != null
-                    ? NetworkImage(widget.avatarUrl!)
+                    ? NetworkImage(resolveMediaUrl(widget.avatarUrl))
                     : null,
                 child: widget.avatarUrl == null
                     ? Text(
@@ -71,12 +74,26 @@ class _MessageBubbleState extends State<MessageBubble> {
                 if (!widget.isMe && widget.message.username.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(left: 4, bottom: 2),
-                    child: Text(
-                      widget.message.username,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.primary,
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => UserProfilePage(
+                              userId: widget.message.senderId, // cần có field này
+                              initialUsername: widget.message.username,
+                              initialAvatarUrl: widget.avatarUrl,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        widget.message.username,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                     ),
                   ),
@@ -256,12 +273,7 @@ class _MessageBubbleState extends State<MessageBubble> {
   }
 
   /// Trên mobile, URL lưu trong DB có thể là localhost -> thay bằng IP thực
-  String _fixImageUrl(String url) {
-    if (kIsWeb) return url;
-    return url
-        .replaceFirst('http://localhost:5001', 'http://192.168.15.31:5001')
-        .replaceFirst('http://127.0.0.1:5001', 'http://192.168.15.31:5001');
-  }
+  // Đã thay bằng resolveMediaUrl từ url_helper.dart
 
   Widget _buildAttachment(MessageAttachment attachment, BuildContext context) {
     switch (attachment.type) {
@@ -281,25 +293,45 @@ class _MessageBubbleState extends State<MessageBubble> {
   }
 
   Widget _buildImageAttachment(MessageAttachment attachment) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      constraints: const BoxConstraints(maxWidth: 250, maxHeight: 250),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          _fixImageUrl(attachment.url),
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              height: 100,
-              color: Colors.grey[300],
-              child: const Icon(Icons.broken_image),
-            );
-          },
-        ),
+  return Container(
+    margin: const EdgeInsets.only(bottom: 8),
+    constraints: const BoxConstraints(maxWidth: 250, maxHeight: 250),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Image.network(
+        resolveMediaUrl(attachment.url),
+        fit: BoxFit.cover,
+
+        // 👇 FIX NẰM Ở ĐÂY
+        loadingBuilder: (context, child, progress) {
+          if (progress == null) {
+            // ảnh load xong → scroll lại
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                context.read<ChatPageViewmodel>().scrollToBottom();
+              }
+            });
+            return child;
+          }
+
+          return Container(
+            height: 150,
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
+          );
+        },
+
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            height: 100,
+            color: Colors.grey[300],
+            child: const Icon(Icons.broken_image),
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildAudioAttachment(MessageAttachment attachment) {
     return Container(
@@ -333,7 +365,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       width: 120,
       height: 120,
       child: Image.network(
-        _fixImageUrl(attachment.url),
+        resolveMediaUrl(attachment.url),
         fit: BoxFit.contain,
         errorBuilder: (context, error, stackTrace) {
           return const Icon(Icons.emoji_emotions, size: 80);
