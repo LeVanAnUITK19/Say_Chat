@@ -14,8 +14,9 @@ class SocketService {
   final Set<String> _joinedRooms = {};
 
   String get _baseUrl {
-    if (kIsWeb) return 'http://localhost:5001';
-    return 'http://192.168.15.31:5001';
+
+
+    return 'https://say-chat.onrender.com';
   }
 
   Future<void> connect() async {

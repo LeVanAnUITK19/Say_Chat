@@ -27,12 +27,6 @@ String resolveMediaUrl(String? rawUrl) {
 }
 
 String _apiBaseUrl() {
-  if (kDebugMode) {
-    if (kIsWeb) {
-      return 'http://localhost:5001';
-    } else {
-      return 'http://192.168.15.31:5001';
-    }
-  }
-  return 'https://your-production-server.com';
+  
+  return 'https://say-chat.onrender.com';
 }
