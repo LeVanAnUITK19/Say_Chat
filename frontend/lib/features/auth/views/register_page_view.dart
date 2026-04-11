@@ -3,7 +3,6 @@ import '../../../l10n/app_localizations.dart';
 import '../../../widgets/my_textfield.dart';
 import '../../../widgets/my_button.dart';
 import '../viewmodels/register_page_viewmodel.dart';
-import '../viewmodels/login_page_viewmodel.dart';
 import 'login_page_view.dart';
 import 'package:provider/provider.dart';
 
@@ -36,22 +35,40 @@ class RegisterPageView extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               title: Text(l10n.register),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
             ),
+            backgroundColor: Theme.of(context).colorScheme.surface,
             body: SafeArea(
               child: Center(
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const SizedBox(height: 40),
-                      const Icon(Icons.message, size: 60, color: Colors.blue),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 32),
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.person_add_rounded,
+                          size: 32,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
 
                       Text(
                         l10n.register,
-                        style: Theme.of(context).textTheme.headlineSmall,
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 28),
 
                       /// USERNAME
                       MyTextField(

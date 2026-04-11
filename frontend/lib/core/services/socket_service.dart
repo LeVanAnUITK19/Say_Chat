@@ -14,8 +14,9 @@ class SocketService {
   final Set<String> _joinedRooms = {};
 
   String get _baseUrl {
-    if (kIsWeb) return 'http://localhost:5001';
-    return 'http://192.168.15.31:5001';
+
+
+    return 'https://say-chat.onrender.com';
   }
 
   Future<void> connect() async {
@@ -47,6 +48,8 @@ class SocketService {
         _socket?.off('new_message');
         _socket?.on('new_message', _handleNewMessage);
       }
+      // Re-register persistent listeners (new_conversation, conversation_updated)
+      _reRegisterPersistentListeners();
     });
     _socket!.onDisconnect((_) => debugPrint('🔌 Socket disconnected'));
     _socket!.onConnectError((e) => debugPrint('❌ Socket connect error: $e'));
@@ -70,6 +73,10 @@ class SocketService {
   // Map lưu callbacks theo conversationId để tránh các chat page ghi đè nhau
   final Map<String, void Function(Map<String, dynamic>)> _newMessageCallbacks = {};
 
+  // Persistent callbacks cho home-level events
+  void Function(Map<String, dynamic>)? _newConversationCallback;
+  void Function(Map<String, dynamic>)? _conversationUpdatedCallback;
+
   void _handleNewMessage(dynamic data) {
     Map<String, dynamic> msgData;
     if (data is Map<String, dynamic>) {
@@ -81,6 +88,27 @@ class SocketService {
     }
     for (final cb in _newMessageCallbacks.values) {
       cb(msgData);
+    }
+  }
+
+  void _reRegisterPersistentListeners() {
+    if (_newConversationCallback != null) {
+      _socket?.off('new_conversation');
+      _socket?.on('new_conversation', (data) {
+        final cb = _newConversationCallback;
+        if (cb == null) return;
+        if (data is Map<String, dynamic>) cb(data);
+        else if (data is Map) cb(Map<String, dynamic>.from(data));
+      });
+    }
+    if (_conversationUpdatedCallback != null) {
+      _socket?.off('conversation_updated');
+      _socket?.on('conversation_updated', (data) {
+        final cb = _conversationUpdatedCallback;
+        if (cb == null) return;
+        if (data is Map<String, dynamic>) cb(data);
+        else if (data is Map) cb(Map<String, dynamic>.from(data));
+      });
     }
   }
 
@@ -118,6 +146,7 @@ class SocketService {
 
   /// Lắng nghe conversation mới (tạo nhóm, direct chat mới)
   void onNewConversation(void Function(Map<String, dynamic> data) callback) {
+    _newConversationCallback = callback;
     _socket?.off('new_conversation');
     _socket?.on('new_conversation', (data) {
       if (data is Map<String, dynamic>) {
@@ -129,11 +158,13 @@ class SocketService {
   }
 
   void offNewConversation() {
+    _newConversationCallback = null;
     _socket?.off('new_conversation');
   }
 
   /// Lắng nghe cập nhật lastMessage của conversation (để sort list ở home)
   void onConversationUpdated(void Function(Map<String, dynamic> data) callback) {
+    _conversationUpdatedCallback = callback;
     _socket?.off('conversation_updated');
     _socket?.on('conversation_updated', (data) {
       if (data is Map<String, dynamic>) {
@@ -145,6 +176,7 @@ class SocketService {
   }
 
   void offConversationUpdated() {
+    _conversationUpdatedCallback = null;
     _socket?.off('conversation_updated');
   }
 

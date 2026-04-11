@@ -65,20 +65,9 @@ class DioClient {
 
   // Environment-based URL configuration
   String _getBaseUrl() {
-    if (kDebugMode) {
-      // Check if running on web
-      if (kIsWeb) {
-        print('🌐 Running on Web - Using: http://localhost:5001');
-        return 'http://localhost:5001'; // Web development
-      } else {
-        print('📱 Running on Mobile - Using: http://10.0.2.2:5001 || 192.168.15.31' );
-        // Mobile development
-        return 'http://192.168.15.31:5001'; // Android emulator
-      }
-    } else {
+    
       // Production - server URL
-      return 'https://your-production-server.com';
-    }
+      return 'https://say-chat.onrender.com';
   }
 
   Dio get dio => _dio;

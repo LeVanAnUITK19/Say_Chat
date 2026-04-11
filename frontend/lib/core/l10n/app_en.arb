@@ -1,5 +1,5 @@
 {
-  "appTitle": "SAY CHAT",
+  "appTitle": "SECRET_CHAT",
   "login": "Login",
   "register": "Register",
   "email": "Email",
@@ -8,7 +8,7 @@
   "cfPassword": "Confirm password",
   "send": "Send",
   "changeLanguage": "Change language",
-  "welcome": "Welcome to SAY CHAT",
+  "welcome": "Welcome to SECRET_CHAT",
   "loading": "Loading ...",
   "forget": "Forget Password ?",
   "home": "Home",
@@ -34,5 +34,8 @@
   "inPerson": "Personal information",
   "all": "All",
   "group": "Group",
-  "unRead": "Unread"
+  "unRead": "Unread",
+  "confirm": "Confirm",
+  "reTurn": "Return",
+  "changePW": "Change password"
 }

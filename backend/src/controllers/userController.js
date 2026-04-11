@@ -41,17 +41,23 @@ export const heartbeat = async (req, res) => {
 };
 
 export const findUser = async (req, res) => {
-    try {
-       
-        const { email } = req.params;
-       
-        const users = await UserModel.find({ email: { $regex: email, $options: 'i' } }).select('-hashedPassword');
-        return res.status(200).json({ users });
+  try {
+    const { email } = req.params;
 
-    } catch (error) {
-        console.error('Lỗi lấy thông tin người dùng khác:', error);
-        res.status(500).json({ message: 'Lỗi máy chủ' });
+    const user = await UserModel.findOne({
+      email: { $eq: email } // 👈 match chính xác
+    }).select('-hashedPassword -resetPasswordOtp -resetPasswordExpires');
+
+    if (!user) {
+      return res.status(404).json({ message: 'Không tìm thấy user' });
     }
+
+    return res.status(200).json({ user });
+
+  } catch (error) {
+    console.error('Lỗi lấy thông tin người dùng:', error);
+    res.status(500).json({ message: 'Lỗi máy chủ' });
+  }
 };
 
 export const getUserById = async (req, res) => {
@@ -76,9 +82,17 @@ export const getUserById = async (req, res) => {
 
         const isFriend = await Friend.findOne({ userA, userB });
         let friendshipStatus = 'none';
+        let conversationId = null;
 
         if (isFriend) {
             friendshipStatus = 'friend';
+            // Lấy conversationId của direct chat giữa 2 người
+            const Conversation = (await import('../models/Conversation.js')).default;
+            const conversation = await Conversation.findOne({
+                type: 'direct',
+                'participants.userId': { $all: [currentUserId, userId] }
+            }).select('_id').lean();
+            conversationId = conversation?._id ?? null;
         } else {
             const pending = await FriendRequest.findOne({
                 $or: [
@@ -99,6 +113,7 @@ export const getUserById = async (req, res) => {
             status: user.status,
             createdAt: user.createdAt,
             friendshipStatus,
+            conversationId,
         });
     } catch (error) {
         console.error('Lỗi lấy thông tin user:', error);

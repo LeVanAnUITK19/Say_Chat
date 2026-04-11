@@ -44,4 +44,9 @@ class AuthRepository {
   Future<AuthResponse> getCurrentUser() async {
     return await _authApi.getCurrentUser();
   }
+
+  /// Lấy thông tin user hiện tại dưới dạng Map (dùng cho AuthProvider)
+  Future<Map<String, dynamic>> fetchUserInfo() async {
+    return await _authApi.fetchUserInfo();
+  }
 }

@@ -58,10 +58,11 @@ export const uploadFile = async (req, res) => {
         
         console.log('✅ File received:', file.filename);
         
-        // Tạo URL cho file dựa trên host của request
-        const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
-        const host = req.headers['x-forwarded-host'] || req.headers.host;
-        const fileUrl = `${protocol}://${host}/uploads/${file.filename}`;
+        // Tạo URL cho file - ưu tiên relative path để tránh hardcode IP
+        const baseUrl = process.env.BASE_URL;
+        const fileUrl = baseUrl
+            ? `${baseUrl}/uploads/${file.filename}`
+            : `/uploads/${file.filename}`;  // relative path khi không có BASE_URL
         
         return res.status(200).json({
             url: fileUrl,

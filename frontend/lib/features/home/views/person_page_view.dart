@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../viewmodels/person_page_viewmodel.dart';
 import 'qr_code_display_page.dart';
+import '../../../core/utils/url_helper.dart';
+import '../../auth/views/sendOTPChange_page_view.dart';
 
 class PersonPage extends StatelessWidget {
   const PersonPage({super.key});
@@ -10,16 +12,16 @@ class PersonPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return ChangeNotifierProvider(
       create: (context) => PersonPageViewmodel(context),
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
           title: Text(l10n.inPerson),
-          backgroundColor: Theme.of(context).colorScheme.primary,
           actions: [
             IconButton(
-              icon: const Icon(Icons.edit),
+              icon: const Icon(Icons.edit_rounded),
               onPressed: () {
                 // TODO: Navigate to edit profile
               },
@@ -38,8 +40,6 @@ class PersonPage extends StatelessWidget {
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Column(
                   children: [
-                    const SizedBox(height: 24),
-
                     // Avatar và tên
                     _buildProfileHeader(context, vm),
 
@@ -70,104 +70,146 @@ class PersonPage extends StatelessWidget {
   }
 
   Widget _buildProfileHeader(BuildContext context, PersonPageViewmodel vm) {
-    return Column(
-      children: [
-        // Avatar
-        Stack(
-          children: [
-            CircleAvatar(
-              radius: 60,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              backgroundImage: vm.avatarUrl != null
-                  ? NetworkImage(vm.avatarUrl!)
-                  : null,
-              child: vm.avatarUrl == null
-                  ? Text(
-                      vm.username?.isNotEmpty == true
-                          ? vm.username![0].toUpperCase()
-                          : 'U',
-                      style: const TextStyle(
-                        fontSize: 48,
-                        color: Colors.white,
-                      ),
-                    )
-                  : null,
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: CircleAvatar(
-                radius: 18,
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                child: vm.isUploadingAvatar
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : IconButton(
-                        icon: const Icon(Icons.camera_alt, size: 18, color: Colors.white),
-                        onPressed: vm.pickAndUpdateAvatar,
-                        padding: EdgeInsets.zero,
-                      ),
-              ),
-            ),
-          ],
+    final scheme = Theme.of(context).colorScheme;
+    final isOnline = vm.status == 'online';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 32),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [scheme.primary, scheme.secondary],
         ),
-
-        const SizedBox(height: 16),
-
-        // Username
-        Text(
-          vm.username ?? 'Unknown',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-
-        const SizedBox(height: 4),
-
-        // Email
-        Text(
-          vm.email ?? '',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
-              ),
-        ),
-
-        const SizedBox(height: 8),
-
-        // Status badge
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: vm.status == 'online' ? Colors.green : Colors.grey,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
+      ),
+      child: Column(
+        children: [
+          Stack(
             children: [
-              Icon(
-                Icons.circle,
-                size: 10,
-                color: Colors.white,
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: CircleAvatar(
+                  radius: 56,
+                  backgroundColor: Colors.white.withOpacity(0.3),
+                  backgroundImage: vm.avatarUrl != null
+                      ? NetworkImage(resolveMediaUrl(vm.avatarUrl))
+                      : null,
+                  child: vm.avatarUrl == null
+                      ? Text(
+                          vm.username?.isNotEmpty == true
+                              ? vm.username![0].toUpperCase()
+                              : 'U',
+                          style: const TextStyle(
+                            fontSize: 44,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                      : null,
+                ),
               ),
-              const SizedBox(width: 6),
-              Text(
-                vm.status == 'online' ? 'Online' : 'Offline',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+              Positioned(
+                bottom: 2,
+                right: 2,
+                child: GestureDetector(
+                  onTap: vm.pickAndUpdateAvatar,
+                  child: Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 6,
+                        ),
+                      ],
+                    ),
+                    child: vm.isUploadingAvatar
+                        ? Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: scheme.primary,
+                            ),
+                          )
+                        : Icon(
+                            Icons.camera_alt_rounded,
+                            size: 18,
+                            color: scheme.primary,
+                          ),
+                  ),
                 ),
               ),
             ],
           ),
-        ),
-      ],
+
+          const SizedBox(height: 14),
+
+          Text(
+            vm.username ?? 'Unknown',
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+
+          const SizedBox(height: 4),
+
+          Text(
+            vm.email ?? '',
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white.withOpacity(0.8),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: isOnline ? const Color(0xFF00C853) : Colors.white54,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  isOnline ? 'Online' : 'Offline',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -210,18 +252,26 @@ class PersonPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 32),
-          const SizedBox(height: 8),
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(height: 10),
           Text(
             value,
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 26,
               fontWeight: FontWeight.bold,
               color: color,
             ),
@@ -231,7 +281,7 @@ class PersonPage extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey[600],
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -244,9 +294,7 @@ class PersonPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -254,9 +302,9 @@ class PersonPage extends StatelessWidget {
             children: [
               Text(
                 'Thông tin',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               _buildInfoRow(
@@ -302,10 +350,7 @@ class PersonPage extends StatelessWidget {
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
               ),
               const SizedBox(height: 4),
               Text(
@@ -351,6 +396,12 @@ class PersonPage extends StatelessWidget {
             icon: Icons.lock,
             label: 'Đổi mật khẩu',
             onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SendOTPChangeView(email: vm.email ?? ''),
+                ),
+              );
               // TODO: Navigate to change password
             },
           ),
@@ -374,29 +425,40 @@ class PersonPage extends StatelessWidget {
     required String label,
     required VoidCallback onTap,
   }) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey[300]!),
-          borderRadius: BorderRadius.circular(12),
+          color: scheme.surfaceBright,
+          border: Border.all(color: scheme.outline.withOpacity(0.2)),
+          borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           children: [
-            Icon(icon, color: Theme.of(context).colorScheme.primary),
-            const SizedBox(width: 16),
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: scheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(icon, color: scheme.primary, size: 20),
+            ),
+            const SizedBox(width: 14),
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: TextStyle(
+                  fontSize: 15,
                   fontWeight: FontWeight.w500,
+                  color: scheme.onSurface,
                 ),
               ),
             ),
-            Icon(Icons.chevron_right, color: Colors.grey[400]),
+            Icon(Icons.chevron_right_rounded, color: scheme.outline),
           ],
         ),
       ),

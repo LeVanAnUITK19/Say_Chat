@@ -12,6 +12,7 @@ import messageRoute from './routes/messageRoute.js';
 import conversationRoute from './routes/conversationRoute.js';
 import uploadRoute from './routes/uploadRoute.js';
 import reactionRoute from './routes/reactionRoute.js';
+import testRoute from './routes/testRoute.js';
 import { startStatusCleanup } from './utils/statusCleanup.js';
 import { initSocket } from './libs/socket.js';
 import path from 'path';
@@ -25,6 +26,8 @@ dotenv.config();
 const app = express();
 const httpServer = createServer(app);
 const PORT = process.env.PORT || 5001;
+
+app.use('/api', testRoute);
 
 // CORS middleware - PHẢI ĐẶT TRƯỚC CÁC MIDDLEWARE KHÁC
 app.use(cors({
@@ -59,6 +62,8 @@ app.use('/api/conversations', conversationRoute);
 app.use('/api/upload', uploadRoute);
 
 app.use('/api/reactions', reactionRoute);
+
+
 
 
 connectDB().then(() => {

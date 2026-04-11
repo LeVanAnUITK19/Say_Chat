@@ -127,6 +127,28 @@ export const declineFriendRequest = async (req, res) => {
 
     }
 };
+export const deleteFriend = async (req, res) => {
+    try{
+        const {friendId} = req.params;
+        const userId = req.user._id.toString();
+
+        let userA = userId;
+        let userB = friendId;
+        if (userA > userB) {
+            [userA, userB] = [userB, userA];
+        }
+        const friendship = await Friend.findOne({userA, userB});
+        if(!friendship){
+            return res.status(404).json({message: "Không tìm thấy mối quan hệ bạn bè"})
+        }
+        await Friend.findByIdAndDelete(friendship._id);
+        return res.status(200).json({message: "Xóa bạn bè thành công"});
+    } catch (error) {
+        console.error("Lỗi khi xóa bạn bè", error);
+        return res.status(500).json({ message: "Lỗi hệ thống" });
+
+}
+};
 
 export const getAllFriends = async (req, res) => {
     try {
@@ -210,24 +232,12 @@ export const searchUsers = async (req, res) => {
         }
 
         const keyword = q.trim();
-        
-        // Kiểm tra xem keyword có phải email không
-        const isEmail = keyword.includes('@');
-        
-        let users;
-        if (isEmail) {
-            // Tìm theo email (chính xác)
-            users = await User.find({ 
-                email: keyword,
-                _id: { $ne: currentUserId }
-            }).select('_id username email avatarUrl status').lean();
-        } else {
-            // Tìm theo username (gần đúng)
-            users = await User.find({ 
-                username: { $regex: keyword, $options: 'i' },
-                _id: { $ne: currentUserId }
-            }).select('_id username email avatarUrl status').lean();
-        }
+
+        // Chỉ tìm theo email chính xác
+        const users = await User.find({ 
+            email: keyword,
+            _id: { $ne: currentUserId }
+        }).select('_id username email avatarUrl status').lean();
 
         // Kiểm tra friendship status của từng user
         const usersWithFriendshipStatus = await Promise.all(users.map(async (user) => {

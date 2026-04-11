@@ -32,31 +32,31 @@ class LoginViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      print(' Calling login API...');
       final response = await _authRepository.login(
         emailController.text.trim(),
         passwordController.text,
       );
-      
+
       // Lưu token vào SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('access_token', response.accessToken);
-      
-      print(' Login success, token saved');
-      
-      // Bắt đầu heartbeat service
-      if (context.mounted) {
-        Provider.of<AuthProvider>(context, listen: false).onLogin();
+
+      // Lấy thông tin user sau khi login
+      Map<String, dynamic>? userData;
+      try {
+        userData = await _authRepository.fetchUserInfo();
+      } catch (e) {
+        debugPrint('Warning: could not fetch user info: $e');
       }
-      
-      // Set state để navigate đến home
-      if( response.accessToken.isNotEmpty )
-        goToHome = true;
+
+      if (context.mounted) {
+        await Provider.of<AuthProvider>(context, listen: false).onLogin(userData);
+      }
+
+      if (response.accessToken.isNotEmpty) goToHome = true;
       isLoading = false;
       notifyListeners();
-      
     } catch (e) {
-      print(' Login error: $e');
       errorMessage = 'Email hoặc mật khẩu không đúng';
       isLoading = false;
       notifyListeners();
@@ -74,8 +74,15 @@ class LoginViewModel extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('access_token', response.accessToken);
 
+      Map<String, dynamic>? userData;
+      try {
+        userData = await _authRepository.fetchUserInfo();
+      } catch (e) {
+        debugPrint('Warning: could not fetch user info: $e');
+      }
+
       if (context.mounted) {
-        Provider.of<AuthProvider>(context, listen: false).onLogin();
+        await Provider.of<AuthProvider>(context, listen: false).onLogin(userData);
       }
 
       if (response.accessToken.isNotEmpty) goToHome = true;

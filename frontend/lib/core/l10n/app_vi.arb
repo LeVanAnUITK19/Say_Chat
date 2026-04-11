@@ -1,5 +1,5 @@
 {
-  "appTitle": "SAY CHAT",
+  "appTitle": "SECRET_CHAT",
   "login": "Đăng nhập",
   "register" : "Đăng ký",
   "email": "Email",
@@ -8,7 +8,7 @@
   "cfPassword": "Xác nhận mật khẩu",
   "send": "Gửi",
   "changeLanguage": "Đổi ngôn ngữ",
-  "welcome": "Chào mừng đến với SAY CHAT",
+  "welcome": "Chào mừng đến với SECRET_CHAT",
   "loading": "Đang tải ...",
   "forget": "Quên mật khẩu ?",
   "home": "Trang chủ",
@@ -34,5 +34,8 @@
   "inPerson": "Thông tin cá nhân",
   "all": "Tất cả",
   "group": "Nhóm",
-  "unRead": "Chưa đọc"
+  "unRead": "Chưa đọc",
+  "confirm": "Xác nhận",
+  "reTurn": "Quay lại",
+  "changePW": "Thay đổi mật khẩu"
 }

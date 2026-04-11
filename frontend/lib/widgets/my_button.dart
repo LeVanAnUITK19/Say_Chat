@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MyButton extends StatelessWidget {
   final void Function()? onTap;
   final String text;
-  final Widget? leading; // ⭐ widget icon
+  final Widget? leading;
   final Color? backgroundColor;
   final Color? textColor;
 
@@ -24,9 +24,11 @@ class MyButton extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 25),
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          color: backgroundColor ??
-              Theme.of(context).colorScheme.secondary,
-          borderRadius: BorderRadius.circular(10),
+          color: backgroundColor ?? Theme.of(context).colorScheme.surfaceDim,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -38,8 +40,9 @@ class MyButton extends StatelessWidget {
             Text(
               text,
               style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: textColor ?? Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ],
@@ -64,49 +67,42 @@ class ButtonConfirm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDisabled = onTap == null;
+    final primary = Theme.of(context).colorScheme.primary;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        margin: const EdgeInsets.symmetric(horizontal: 25),
-        decoration: BoxDecoration(
-          color: isDisabled
-              ? Colors.grey
-              : const Color(0xFF7CFC00),
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: isDisabled
-              ? []
-              : [
-                  BoxShadow(
-                    color: Color.fromARGB(255, 95, 185, 5),
-                    spreadRadius: 1,
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (icon != null) ...[
-              Icon(icon, color: Colors.white),
-              const SizedBox(width: 8),
-            ],
-            Text(
-              text,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 25),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: onTap,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: isDisabled ? Colors.grey.shade400 : primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            elevation: isDisabled ? 0 : 3,
+            shadowColor: primary.withOpacity(0.4),
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
-          ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 20),
+                const SizedBox(width: 8),
+              ],
+              Text(
+                text,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
-
-
-

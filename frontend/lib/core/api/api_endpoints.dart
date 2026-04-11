@@ -22,6 +22,9 @@ class ApiEndpoints {
   static const String addFriend = '/api/friends/add';
   static const String friendRequests = '/api/friends/requests';
   static const String acceptFriendRequest = '/api/friends/accept';
+  static const String declineFriendRequest = '/api/friends/decline';
+  static const String deleteFriend = '/api/friends/delete';
+
   static const String getFriendOnlineStatus = '/api/friends/online-status';
 
   //Message

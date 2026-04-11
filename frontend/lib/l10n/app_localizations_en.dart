@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'SAY CHAT';
+  String get appTitle => 'SECRET_CHAT';
 
   @override
   String get login => 'Login';
@@ -36,7 +36,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get changeLanguage => 'Change language';
 
   @override
-  String get welcome => 'Welcome to SAY CHAT';
+  String get welcome => 'Welcome to SECRET_CHAT';
 
   @override
   String get loading => 'Loading ...';
@@ -115,4 +115,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unRead => 'Unread';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get reTurn => 'Return';
+
+  @override
+  String get changePW => 'Change password';
 }
